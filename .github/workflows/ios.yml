@@ -1,0 +1,42 @@
+name: iOS CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  build_and_test:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode.app
+    
+    - name: Install SwiftLint
+      run: brew install swiftlint
+    
+    - name: SwiftLint
+      run: swiftlint lint --reporter github-actions-logging
+      
+    - name: Install Fastlane
+      run: brew install fastlane
+
+    - name: Build
+      run: |
+        xcodebuild clean build \
+          -scheme "TacoBellApp" \
+          -destination "platform=iOS Simulator,name=iPhone 14"
+          
+    - name: Deploy to TestFlight
+      if: github.ref == 'refs/heads/main'
+      env:
+        FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        FASTLANE_USER: ${{ secrets.APPLE_DEVELOPER_ID }}
+        FASTLANE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_PASSWORD }}
+      run: |
+        fastlane beta

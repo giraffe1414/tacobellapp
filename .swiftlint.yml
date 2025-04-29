@@ -1,0 +1,69 @@
+# SwiftLint configuration for Taco Bell Distance App
+# Customized for beginner-friendly development while maintaining code quality
+
+# Disable overly strict rules that might be frustrating for beginners
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+  - function_body_length
+  - file_length
+  - type_body_length
+  - cyclomatic_complexity
+
+# Enable some helpful rules that catch common mistakes
+opt_in_rules:
+  - empty_count
+  - empty_string
+  - fatal_error_message
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - legacy_random
+  - redundant_nil_coalescing
+  - unused_import
+  - vertical_whitespace_closing_braces
+
+# Paths to ignore during linting
+excluded:
+  - Carthage
+  - Pods
+  - fastlane
+  - build
+  - .build
+
+# Customized rule configurations
+force_cast: warning
+force_try: warning
+function_parameter_count:
+  warning: 6
+  error: 8
+
+# Naming rules
+identifier_name:
+  min_length: 2
+  max_length: 40
+  excluded:
+    - id
+    - URL
+    - x
+    - y
+
+# File length limits (in lines)
+file_length:
+  warning: 500
+  error: 1000
+
+# Type length limits (in lines)
+type_body_length:
+  warning: 300
+  error: 500
+
+# Line length limits
+line_length:
+  warning: 120
+  error: 150
+
+# Nesting limits
+nesting:
+  type_level:
+    warning: 3
+    error: 5
