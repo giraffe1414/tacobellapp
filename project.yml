@@ -1,0 +1,27 @@
+name: TacoBellApp
+options:
+  bundleIdPrefix: com.giraffe1414
+  deploymentTarget:
+    iOS: 15.0
+
+targets:
+  TacoBellApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.giraffe1414.tacobellapp
+        DEVELOPMENT_TEAM: # You'll need to add your team ID here
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        UILaunchStoryboardName: LaunchScreen
+        UIMainStoryboardFile: Main
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSLocationWhenInUseUsageDescription: "We need your location to find the nearest Taco Bell"
+        NSLocationAlwaysAndWhenInUseUsageDescription: "We need your location to find the nearest Taco Bell"
