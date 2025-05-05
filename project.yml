@@ -13,7 +13,9 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.giraffe1414.tacobellapp
-        DEVELOPMENT_TEAM: # You'll need to add your team ID here
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: "" # Will be set in Xcode
+        CODE_SIGN_IDENTITY: "Apple Development"
     info:
       path: Sources/Info.plist
       properties:

@@ -32,11 +32,6 @@ jobs:
           -scheme "TacoBellApp" \
           -destination "platform=iOS Simulator,name=iPhone 14"
           
-    - name: Deploy to TestFlight
-      if: github.ref == 'refs/heads/main'
-      env:
-        FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-        FASTLANE_USER: ${{ secrets.APPLE_DEVELOPER_ID }}
-        FASTLANE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_PASSWORD }}
+    - name: Build Complete
       run: |
-        fastlane beta
+        echo "Build completed successfully"
