@@ -9,32 +9,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("ViewController loaded")
         setupLocationManager()
         setupRefreshControl()
-    }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        view.backgroundColor = .white
-        
-        // Make sure any subviews are visible
-        view.subviews.forEach { subview in
-            if let label = subview as? UILabel {
-                label.textColor = .black
-            }
-            subview.backgroundColor = .white
-        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        print("ViewController: viewWillAppear")
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        print("ViewController: viewDidAppear")
     }
     
     private func setupLocationManager() {
@@ -46,19 +22,12 @@ class ViewController: UIViewController {
     
     private func setupRefreshControl() {
         let scrollView = UIScrollView(frame: view.bounds)
-        scrollView.backgroundColor = .white
         scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
-        // Add a content view to the scroll view
-        let contentView = UIView(frame: view.bounds)
-        contentView.backgroundColor = .white
-        scrollView.addSubview(contentView)
         
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshContent), for: .valueChanged)
         scrollView.refreshControl = refreshControl
         
-        // Add scroll view as first subview
         view.insertSubview(scrollView, at: 0)
     }
     
