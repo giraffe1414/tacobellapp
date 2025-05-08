@@ -11,27 +11,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
-        do {
-            window = UIWindow(windowScene: windowScene)
-            print("SceneDelegate: Created window")
-            
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            print("SceneDelegate: Loaded Main storyboard")
-            
-            guard let viewController = storyboard.instantiateInitialViewController() else {
-                print("SceneDelegate: Failed to instantiate initial view controller")
-                return
-            }
-            
-            window?.rootViewController = viewController
-            print("SceneDelegate: Set root view controller")
-            
-            window?.backgroundColor = .white
-            window?.makeKeyAndVisible()
-            print("SceneDelegate: Made window key and visible")
-        } catch {
-            print("SceneDelegate: Error during setup: \(error)")
+        window = UIWindow(windowScene: windowScene)
+        print("SceneDelegate: Created window")
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        print("SceneDelegate: Loaded Main storyboard")
+        
+        guard let viewController = storyboard.instantiateInitialViewController() else {
+            print("SceneDelegate: Failed to instantiate initial view controller")
+            return
         }
+        
+        window?.rootViewController = viewController
+        print("SceneDelegate: Set root view controller")
+        
+        window?.backgroundColor = .white
+        window?.makeKeyAndVisible()
+        print("SceneDelegate: Made window key and visible")
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
