@@ -9,6 +9,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
+        print("ViewController loaded")
         setupLocationManager()
         setupRefreshControl()
     }
@@ -21,9 +23,13 @@ class ViewController: UIViewController {
     }
     
     private func setupRefreshControl() {
+        let scrollView = UIScrollView(frame: view.bounds)
+        scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(scrollView)
+        
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshContent), for: .valueChanged)
-        // Add refresh control to scroll view or table view
+        scrollView.refreshControl = refreshControl
     }
     
     @objc private func refreshContent() {
