@@ -10,8 +10,16 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print("ViewController loaded")
+        view.backgroundColor = .white
         setupLocationManager()
         setupRefreshControl()
+        
+        // Make sure any subviews are visible
+        view.subviews.forEach { subview in
+            if let label = subview as? UILabel {
+                label.textColor = .black
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
