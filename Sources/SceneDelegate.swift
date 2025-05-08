@@ -12,7 +12,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         window = UIWindow(windowScene: windowScene)
-        print("SceneDelegate: Created window")
+        window?.backgroundColor = .white
+        print("SceneDelegate: Created window with white background")
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         print("SceneDelegate: Loaded Main storyboard")
@@ -22,10 +23,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
+        viewController.view.backgroundColor = .white
         window?.rootViewController = viewController
-        print("SceneDelegate: Set root view controller")
+        print("SceneDelegate: Set root view controller with white background")
         
-        window?.backgroundColor = .white
         window?.makeKeyAndVisible()
         print("SceneDelegate: Made window key and visible")
     }
