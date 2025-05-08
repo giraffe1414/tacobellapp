@@ -11,10 +11,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
+        // Create and configure window
         window = UIWindow(windowScene: windowScene)
         window?.backgroundColor = .white
         print("SceneDelegate: Created window with white background")
         
+        // Load and configure view controller
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         print("SceneDelegate: Loaded Main storyboard")
         
@@ -23,10 +25,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
+        // Force view to load and set background color
+        _ = viewController.view
         viewController.view.backgroundColor = .white
+        print("SceneDelegate: Configured view controller with white background")
+        
+        // Set up window hierarchy
         window?.rootViewController = viewController
+        window?.backgroundColor = .white // Set again after root view controller
         print("SceneDelegate: Set root view controller with white background")
         
+        // Make window visible
         window?.makeKeyAndVisible()
         print("SceneDelegate: Made window key and visible")
     }
