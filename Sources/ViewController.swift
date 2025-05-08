@@ -41,12 +41,20 @@ class ViewController: UIViewController {
     
     private func setupRefreshControl() {
         let scrollView = UIScrollView(frame: view.bounds)
+        scrollView.backgroundColor = .white
         scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(scrollView)
+        
+        // Add a content view to the scroll view
+        let contentView = UIView(frame: view.bounds)
+        contentView.backgroundColor = .white
+        scrollView.addSubview(contentView)
         
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshContent), for: .valueChanged)
         scrollView.refreshControl = refreshControl
+        
+        // Add scroll view as first subview
+        view.insertSubview(scrollView, at: 0)
     }
     
     @objc private func refreshContent() {
