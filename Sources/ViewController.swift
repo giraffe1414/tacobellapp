@@ -144,6 +144,8 @@ class ViewController: UIViewController {
     }
     
     private func createTacos(for level: Int) {
+        print("Creating tacos for level \(level)")
+        
         // Remove existing tacos
         tacoViews.forEach { $0.removeFromSuperview() }
         tacoViews.removeAll()
@@ -152,48 +154,45 @@ class ViewController: UIViewController {
         collision.removeAllBoundaries()
         collision.translatesReferenceBoundsIntoBoundary = true
         
-        let tacoCount: Int
-        switch level {
-        case 1: tacoCount = 2
-        case 2: tacoCount = 5
-        case 3: tacoCount = 11
-        case 4: tacoCount = 17
-        case 5: tacoCount = 25
-        default: tacoCount = 2
-        }
+        // Calculate taco count based on level
+        let tacoCount = calculateTacoCount(for: level)
+        print("Will create \(tacoCount) tacos")
         
         // Create and animate tacos
-        for _ in 0..<tacoCount {
-            let randomX = CGFloat.random(in: 50...(view.bounds.width - 50))
-            let tacoView = UIImageView(frame: CGRect(x: randomX, y: -50, width: 40, height: 40))
-            if #available(iOS 13.0, *) {
-                let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .medium)
-                tacoView.image = UIImage(systemName: "takeoutbag.and.cup.and.straw.fill")?
-                    .withConfiguration(config)
-                    .withTintColor(.systemOrange, renderingMode: .alwaysOriginal)
-            } else {
-                // Fallback for older iOS versions
-                tacoView.backgroundColor = .systemOrange
-                tacoView.layer.cornerRadius = 20
+        DispatchQueue.main.async {
+            for i in 0..<tacoCount {
+                print("Creating taco \(i + 1) of \(tacoCount)")
+                let randomX = CGFloat.random(in: 50...(self.view.bounds.width - 50))
+                let tacoView = UIImageView(frame: CGRect(x: randomX, y: -50, width: 40, height: 40))
+                if #available(iOS 13.0, *) {
+                    let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .medium)
+                    tacoView.image = UIImage(systemName: "takeoutbag.and.cup.and.straw.fill")?
+                        .withConfiguration(config)
+                        .withTintColor(.systemOrange, renderingMode: .alwaysOriginal)
+                } else {
+                    // Fallback for older iOS versions
+                    tacoView.backgroundColor = .systemOrange
+                    tacoView.layer.cornerRadius = 20
+                }
+                tacoView.contentMode = .scaleAspectFit
+                tacoView.isUserInteractionEnabled = true
+                
+                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tacoTapped(_:)))
+                tacoView.addGestureRecognizer(tapGesture)
+                
+                self.view.addSubview(tacoView)
+                self.tacoViews.append(tacoView)
+                
+                // Add physics
+                self.gravity.addItem(tacoView)
+                self.collision.addItem(tacoView)
+                
+                // Add rotation
+                let rotation = UIDynamicItemBehavior(items: [tacoView])
+                rotation.addAngularVelocity(CGFloat.random(in: -2...2), for: tacoView)
+                rotation.elasticity = 0.5
+                self.animator.addBehavior(rotation)
             }
-            tacoView.contentMode = .scaleAspectFit
-            tacoView.isUserInteractionEnabled = true
-            
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tacoTapped(_:)))
-            tacoView.addGestureRecognizer(tapGesture)
-            
-            view.addSubview(tacoView)
-            tacoViews.append(tacoView)
-            
-            // Add physics
-            gravity.addItem(tacoView)
-            collision.addItem(tacoView)
-            
-            // Add rotation
-            let rotation = UIDynamicItemBehavior(items: [tacoView])
-            rotation.addAngularVelocity(CGFloat.random(in: -2...2), for: tacoView)
-            rotation.elasticity = 0.5
-            animator.addBehavior(rotation)
         }
     }
     
@@ -279,6 +278,19 @@ extension ViewController: CLLocationManagerDelegate {
         }
     }
     
+    private func calculateTacoCount(for level: Int) -> Int {
+        let count: Int
+        switch level {
+        case 1: count = 2
+        case 2: count = 5
+        case 3: count = 11
+        case 4: count = 17
+        case 5: count = 25
+        default: count = 2
+        }
+        return count
+    }
+
     private func updateLevel(distance: Double) {
         // Update level based on distance
         let newLevel: Int
