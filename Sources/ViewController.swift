@@ -63,15 +63,7 @@ class ViewController: UIViewController {
     }
     
     private func setupPhysics() {
-        animator = UIDynamicAnimator(referenceView: view)
-        
-        gravity = UIGravityBehavior()
-        gravity.magnitude = 0.8
-        animator.addBehavior(gravity)
-        
-        collision = UICollisionBehavior()
-        collision.translatesReferenceBoundsIntoBoundary = true
-        animator.addBehavior(collision)
+        // No physics setup needed for UIView animations
     }
     
     private func setupDistanceLabel() {
@@ -150,50 +142,46 @@ class ViewController: UIViewController {
         tacoViews.forEach { $0.removeFromSuperview() }
         tacoViews.removeAll()
         
-        // Reset physics
-        collision.removeAllBoundaries()
-        collision.translatesReferenceBoundsIntoBoundary = true
-        
         // Calculate taco count based on level
         let tacoCount = calculateTacoCount(for: level)
         print("Will create \(tacoCount) tacos")
         
-        // Create all tacos at once with different starting positions
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            for i in 0..<tacoCount {
-                print("Creating taco \(i + 1) of \(tacoCount)")
-                let randomX = CGFloat.random(in: 50...(self.view.bounds.width - 50))
-                let startY = CGFloat(-50 - (40 * i)) // Stack them vertically above the screen
-                let tacoView = UIImageView(frame: CGRect(x: randomX, y: startY, width: 40, height: 40))
-                
-                if #available(iOS 13.0, *) {
-                    let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .medium)
-                    tacoView.image = UIImage(systemName: "takeoutbag.and.cup.and.straw.fill")?
-                        .withConfiguration(config)
-                        .withTintColor(.systemOrange, renderingMode: .alwaysOriginal)
-                } else {
-                    tacoView.backgroundColor = .systemOrange
-                    tacoView.layer.cornerRadius = 20
-                }
-                
-                tacoView.contentMode = .scaleAspectFit
-                tacoView.isUserInteractionEnabled = true
-                
-                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tacoTapped(_:)))
-                tacoView.addGestureRecognizer(tapGesture)
-                
-                self.view.addSubview(tacoView)
-                self.tacoViews.append(tacoView)
-                
-                // Add physics
-                self.gravity.addItem(tacoView)
-                self.collision.addItem(tacoView)
-                
-                // Add rotation
-                let rotation = UIDynamicItemBehavior(items: [tacoView])
-                rotation.addAngularVelocity(CGFloat.random(in: -2...2), for: tacoView)
-                rotation.elasticity = 0.5
-                self.animator.addBehavior(rotation)
+        // Create and animate tacos
+        for i in 0..<tacoCount {
+            print("Creating taco \(i + 1) of \(tacoCount)")
+            let randomX = CGFloat.random(in: 50...(view.bounds.width - 50))
+            let tacoView = UIImageView(frame: CGRect(x: randomX, y: -50, width: 40, height: 40))
+            
+            if #available(iOS 13.0, *) {
+                let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .medium)
+                tacoView.image = UIImage(systemName: "takeoutbag.and.cup.and.straw.fill")?
+                    .withConfiguration(config)
+                    .withTintColor(.systemOrange, renderingMode: .alwaysOriginal)
+            } else {
+                tacoView.backgroundColor = .systemOrange
+                tacoView.layer.cornerRadius = 20
+            }
+            
+            tacoView.contentMode = .scaleAspectFit
+            tacoView.isUserInteractionEnabled = true
+            
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tacoTapped(_:)))
+            tacoView.addGestureRecognizer(tapGesture)
+            
+            view.addSubview(tacoView)
+            tacoViews.append(tacoView)
+            
+            // Animate falling with rotation
+            let duration = Double.random(in: 2.0...4.0)
+            let delay = Double(i) * 0.2 // Stagger the start times
+            
+            UIView.animate(withDuration: duration, delay: delay, options: [.curveEaseIn, .allowUserInteraction], animations: {
+                tacoView.center.y = self.view.bounds.height - 20
+                tacoView.transform = CGAffineTransform(rotationAngle: CGFloat.random(in: -CGFloat.pi...CGFloat.pi))
+            }) { _ in
+                UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut, .allowUserInteraction, .repeat, .autoreverse], animations: {
+                    tacoView.center.y -= 10 // Small bounce
+                })
             }
         }
     }
@@ -209,9 +197,7 @@ class ViewController: UIViewController {
             tacoView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
             tacoView.alpha = 0
         }) { _ in
-            // Remove from physics and view
-            self.gravity.removeItem(tacoView)
-            self.collision.removeItem(tacoView)
+            // Remove from view
             tacoView.removeFromSuperview()
             if let index = self.tacoViews.firstIndex(of: tacoView) {
                 self.tacoViews.remove(at: index)
