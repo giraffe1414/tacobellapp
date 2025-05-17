@@ -5,7 +5,7 @@ import MapKit
 class ViewController: UIViewController {
     private var locationManager: CLLocationManager?
     private var currentLevel = 1
-    private var tacoViews: [UIImageView] = []
+    private var tacoViews: [UILabel] = []
     private var distanceLabel: UILabel!
     private var scoreLabel: UILabel!
     private var levelLabel: UILabel!
@@ -165,26 +165,11 @@ class ViewController: UIViewController {
             print("Creating taco \(i + 1) of \(tacoCount)")
             let randomX = CGFloat.random(in: 50...(view.bounds.width - 50))
             let startY = CGFloat(-50 - (i * 30)) // Stack them vertically
-            let tacoView = UIImageView(frame: CGRect(x: randomX, y: startY, width: 40, height: 40))
-            
-            // Use emoji label instead of image
+            let tacoView = UILabel(frame: CGRect(x: randomX, y: startY, width: 60, height: 60))
+            tacoView.text = "🌮"
+            tacoView.font = .systemFont(ofSize: 50)
+            tacoView.textAlignment = .center
             tacoView.backgroundColor = .clear
-            
-            let emojiLabel = UILabel()
-            emojiLabel.translatesAutoresizingMaskIntoConstraints = false
-            emojiLabel.text = "🌮"
-            emojiLabel.font = .systemFont(ofSize: 40)
-            emojiLabel.textAlignment = .center
-            tacoView.addSubview(emojiLabel)
-            
-            NSLayoutConstraint.activate([
-                emojiLabel.centerXAnchor.constraint(equalTo: tacoView.centerXAnchor),
-                emojiLabel.centerYAnchor.constraint(equalTo: tacoView.centerYAnchor),
-                emojiLabel.widthAnchor.constraint(equalTo: tacoView.widthAnchor),
-                emojiLabel.heightAnchor.constraint(equalTo: tacoView.heightAnchor)
-            ])
-            
-            tacoView.contentMode = .scaleAspectFit
             tacoView.isUserInteractionEnabled = true
             
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tacoTapped(_:)))
@@ -215,7 +200,7 @@ class ViewController: UIViewController {
     }
     
     @objc private func tacoTapped(_ gesture: UITapGestureRecognizer) {
-        guard let tacoView = gesture.view as? UIImageView else { return }
+        guard let tacoView = gesture.view as? UILabel else { return }
         
         // Remove from physics
         gravity.removeItem(tacoView)
