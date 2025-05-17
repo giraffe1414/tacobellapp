@@ -17,8 +17,8 @@ targets:
         DEVELOPMENT_TEAM: "" # Will be set in Xcode
         CODE_SIGN_IDENTITY: "Apple Development"
     dependencies:
-      - framework: MapKit.framework
-      - framework: CoreLocation.framework
+      - sdk: MapKit.framework
+      - sdk: CoreLocation.framework
     info:
       path: Sources/Info.plist
       properties:
