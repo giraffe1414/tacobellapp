@@ -7,17 +7,59 @@ class ViewController: UIViewController {
     private var currentLevel = 1
     private var tacoViews: [UIImageView] = []
     private var distanceLabel: UILabel!
+    private var scoreLabel: UILabel!
+    private var levelLabel: UILabel!
     private let geocoder = CLGeocoder()
     private var animator: UIDynamicAnimator!
     private var gravity: UIGravityBehavior!
     private var collision: UICollisionBehavior!
+    private var refreshControl: UIRefreshControl?
+    private var score: Int = 0 {
+        didSet {
+            scoreLabel.text = "Score: \(score)"
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLocationManager()
         setupRefreshControl()
         setupDistanceLabel()
+        setupScoreLabel()
+        setupLevelLabel()
         setupPhysics()
+    }
+    
+    private func setupLevelLabel() {
+        levelLabel = UILabel()
+        levelLabel.translatesAutoresizingMaskIntoConstraints = false
+        levelLabel.textAlignment = .center
+        levelLabel.font = .systemFont(ofSize: 18, weight: .medium)
+        levelLabel.text = "Level: 1"
+        view.addSubview(levelLabel)
+        
+        NSLayoutConstraint.activate([
+            levelLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            levelLabel.topAnchor.constraint(equalTo: scoreLabel.bottomAnchor, constant: 10),
+            levelLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            levelLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+    }
+    
+    private func setupScoreLabel() {
+        scoreLabel = UILabel()
+        scoreLabel.translatesAutoresizingMaskIntoConstraints = false
+        scoreLabel.textAlignment = .center
+        scoreLabel.font = .systemFont(ofSize: 18, weight: .bold)
+        scoreLabel.text = "Score: 0"
+        view.addSubview(scoreLabel)
+        
+        NSLayoutConstraint.activate([
+            scoreLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scoreLabel.topAnchor.constraint(equalTo: distanceLabel.bottomAnchor, constant: 10),
+            scoreLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            scoreLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
     }
     
     private func setupPhysics() {
@@ -52,15 +94,25 @@ class ViewController: UIViewController {
         locationManager = CLLocationManager()
         locationManager?.delegate = self
         locationManager?.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager?.requestWhenInUseAuthorization()
+        
+        switch CLLocationManager.authorizationStatus() {
+        case .notDetermined:
+            locationManager?.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager?.requestLocation()
+        case .denied, .restricted:
+            distanceLabel.text = "Please enable location access in Settings"
+        @unknown default:
+            break
+        }
     }
     
     private func setupRefreshControl() {
         let scrollView = UIScrollView(frame: view.bounds)
         scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refreshContent), for: .valueChanged)
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(refreshContent), for: .valueChanged)
         scrollView.refreshControl = refreshControl
         
         view.insertSubview(scrollView, at: 0)
@@ -123,7 +175,10 @@ class ViewController: UIViewController {
     @objc private func tacoTapped(_ gesture: UITapGestureRecognizer) {
         guard let tacoView = gesture.view as? UIImageView else { return }
         
-        // Animate taco disappearing
+        // Increment score
+        score += 1
+        
+        // Animate taco disappearing with a pop effect
         UIView.animate(withDuration: 0.3, animations: {
             tacoView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
             tacoView.alpha = 0
@@ -135,11 +190,27 @@ class ViewController: UIViewController {
             if let index = self.tacoViews.firstIndex(of: tacoView) {
                 self.tacoViews.remove(at: index)
             }
+            
+            // Create new taco if all are gone
+            if self.tacoViews.isEmpty {
+                self.createTacos(for: self.currentLevel)
+            }
         }
     }
 }
 
 extension ViewController: CLLocationManagerDelegate {
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager?.requestLocation()
+        case .denied, .restricted:
+            distanceLabel.text = "Please enable location access in Settings"
+        default:
+            break
+        }
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.first else { return }
         
@@ -170,13 +241,14 @@ extension ViewController: CLLocationManagerDelegate {
             DispatchQueue.main.async {
                 self.distanceLabel.text = String(format: "Nearest Taco Bell: %.1f miles", distanceInMiles)
                 self.updateLevel(distance: distanceInMiles)
+                self.refreshControl?.endRefreshing()
             }
         }
     }
     
     private func updateLevel(distance: Double) {
         // Update level based on distance
-        currentLevel = switch distance {
+        let newLevel = switch distance {
             case 0...1: 5    // Less than 1 mile
             case 1...2: 4    // 1-2 miles
             case 2...3: 3    // 2-3 miles
@@ -184,11 +256,30 @@ extension ViewController: CLLocationManagerDelegate {
             default: 1       // More than 4 miles
         }
         
-        // Create tacos for current level
-        createTacos(for: currentLevel)
+        // Only update if level changed
+        if currentLevel != newLevel {
+            currentLevel = newLevel
+            levelLabel.text = "Level: \(currentLevel)"
+            
+            // Add level up animation
+            UIView.animate(withDuration: 0.3, animations: {
+                self.levelLabel.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+            }) { _ in
+                UIView.animate(withDuration: 0.2) {
+                    self.levelLabel.transform = .identity
+                }
+            }
+            
+            // Create tacos for new level
+            createTacos(for: currentLevel)
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Location error: \(error.localizedDescription)")
+        DispatchQueue.main.async {
+            self.distanceLabel.text = "Error getting location"
+            self.refreshControl?.endRefreshing()
+        }
     }
 }
