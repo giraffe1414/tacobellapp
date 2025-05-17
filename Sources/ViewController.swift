@@ -166,43 +166,42 @@ class ViewController: UIViewController {
             let randomX = CGFloat.random(in: 50...(view.bounds.width - 50))
             let startY = CGFloat(-50 - (i * 30)) // Stack them vertically
             let tacoView = UIImageView(frame: CGRect(x: randomX, y: startY, width: 40, height: 40))
-                
-                // Use emoji label instead of image
-                let emojiLabel = UILabel(frame: tacoView.bounds)
-                emojiLabel.text = "🌮"
-                emojiLabel.font = .systemFont(ofSize: 30)
-                emojiLabel.textAlignment = .center
-                tacoView.addSubview(emojiLabel)
-                tacoView.backgroundColor = .clear
-                
-                tacoView.contentMode = .scaleAspectFit
-                tacoView.isUserInteractionEnabled = true
-                
-                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tacoTapped(_:)))
-                tacoView.addGestureRecognizer(tapGesture)
-                
-                self.view.addSubview(tacoView)
-                self.tacoViews.append(tacoView)
-                
-                // Add physics behaviors
-                self.gravity.addItem(tacoView)
-                self.collision.addItem(tacoView)
-                
-                // Add rotation behavior
-                let rotation = UIDynamicItemBehavior(items: [tacoView])
-                rotation.addAngularVelocity(CGFloat.random(in: -3...3), for: tacoView)
-                rotation.elasticity = 0.5
-                rotation.resistance = 1.0
-                self.animator.addBehavior(rotation)
-                
-                // Add item behavior for better physics
-                let itemBehavior = UIDynamicItemBehavior(items: [tacoView])
-                itemBehavior.elasticity = 0.6
-                itemBehavior.friction = 0.2
-                itemBehavior.resistance = 0.1
-                itemBehavior.density = 0.5
-                self.animator.addBehavior(itemBehavior)
-            }
+            
+            // Use emoji label instead of image
+            let emojiLabel = UILabel(frame: tacoView.bounds)
+            emojiLabel.text = "🌮"
+            emojiLabel.font = .systemFont(ofSize: 30)
+            emojiLabel.textAlignment = .center
+            tacoView.addSubview(emojiLabel)
+            tacoView.backgroundColor = .clear
+            
+            tacoView.contentMode = .scaleAspectFit
+            tacoView.isUserInteractionEnabled = true
+            
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tacoTapped(_:)))
+            tacoView.addGestureRecognizer(tapGesture)
+            
+            view.addSubview(tacoView)
+            tacoViews.append(tacoView)
+            
+            // Add physics behaviors
+            gravity.addItem(tacoView)
+            collision.addItem(tacoView)
+            
+            // Add rotation behavior
+            let rotation = UIDynamicItemBehavior(items: [tacoView])
+            rotation.addAngularVelocity(CGFloat.random(in: -3...3), for: tacoView)
+            rotation.elasticity = 0.5
+            rotation.resistance = 1.0
+            animator.addBehavior(rotation)
+            
+            // Add item behavior for better physics
+            let itemBehavior = UIDynamicItemBehavior(items: [tacoView])
+            itemBehavior.elasticity = 0.6
+            itemBehavior.friction = 0.2
+            itemBehavior.resistance = 0.1
+            itemBehavior.density = 0.5
+            animator.addBehavior(itemBehavior)
         }
     }
     
@@ -302,7 +301,7 @@ extension ViewController: CLLocationManagerDelegate {
         }
         return count
     }
-
+    
     private func updateLevel(distance: Double) {
         // Update level based on distance
         let newLevel: Int
