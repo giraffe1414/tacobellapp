@@ -171,31 +171,27 @@ class ViewController: UIViewController {
             view.addSubview(tacoView)
             tacoViews.append(tacoView)
             
-            // Animate falling with physics-like motion
-            let duration = Double.random(in: 2.0...3.0)
-            let delay = Double(i) * 0.2 // Stagger the start times
+            // Start rotation animation
+            UIView.animate(withDuration: 3.0, delay: 0, options: [.curveLinear, .repeat, .allowUserInteraction], animations: {
+                tacoView.transform = CGAffineTransform(rotationAngle: .pi * 2)
+            })
             
-            UIView.animateKeyframes(withDuration: duration, delay: delay, options: [.calculationModeCubic, .allowUserInteraction], animations: {
-                // Initial acceleration
-                UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.3) {
-                    tacoView.center.y += 100
-                    tacoView.transform = CGAffineTransform(rotationAngle: CGFloat.random(in: -CGFloat.pi/4...CGFloat.pi/4))
-                }
-                
-                // Mid-fall with rotation
-                UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.4) {
-                    tacoView.center.y = self.view.bounds.height - 100
-                    tacoView.transform = CGAffineTransform(rotationAngle: CGFloat.random(in: -CGFloat.pi...CGFloat.pi))
-                }
-                
-                // Final fall with bounce preparation
-                UIView.addKeyframe(withRelativeStartTime: 0.7, relativeDuration: 0.3) {
-                    tacoView.center.y = self.view.bounds.height - 20
-                }
+            // Animate falling with spring physics
+            let delay = Double(i) * 0.15 // Slightly faster stagger
+            UIView.animate(withDuration: 1.5,
+                         delay: delay,
+                         usingSpringWithDamping: 0.7,
+                         initialSpringVelocity: 0.0,
+                         options: [.allowUserInteraction],
+                         animations: {
+                tacoView.center.y = self.view.bounds.height - 30
             }) { _ in
-                // Add bouncing effect
-                UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut, .allowUserInteraction, .repeat, .autoreverse], animations: {
-                    tacoView.center.y -= 15
+                // Add subtle floating effect
+                UIView.animate(withDuration: 1.2,
+                             delay: 0,
+                             options: [.repeat, .autoreverse, .allowUserInteraction, .curveEaseInOut],
+                             animations: {
+                    tacoView.center.y -= 10
                 })
             }
         }
