@@ -95,15 +95,31 @@ class ViewController: UIViewController {
         locationManager?.delegate = self
         locationManager?.desiredAccuracy = kCLLocationAccuracyBest
         
-        switch CLLocationManager.authorizationStatus() {
-        case .notDetermined:
-            locationManager?.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse, .authorizedAlways:
-            locationManager?.requestLocation()
-        case .denied, .restricted:
-            distanceLabel.text = "Please enable location access in Settings"
-        @unknown default:
-            break
+        if #available(iOS 14.0, *) {
+            switch locationManager?.authorizationStatus {
+            case .notDetermined:
+                locationManager?.requestWhenInUseAuthorization()
+            case .authorizedWhenInUse, .authorizedAlways:
+                locationManager?.requestLocation()
+            case .denied, .restricted:
+                distanceLabel.text = "Please enable location access in Settings"
+            case .none:
+                break
+            @unknown default:
+                break
+            }
+        } else {
+            // Fallback on earlier versions
+            switch CLLocationManager.authorizationStatus() {
+            case .notDetermined:
+                locationManager?.requestWhenInUseAuthorization()
+            case .authorizedWhenInUse, .authorizedAlways:
+                locationManager?.requestLocation()
+            case .denied, .restricted:
+                distanceLabel.text = "Please enable location access in Settings"
+            @unknown default:
+                break
+            }
         }
     }
     
@@ -254,12 +270,17 @@ extension ViewController: CLLocationManagerDelegate {
     
     private func updateLevel(distance: Double) {
         // Update level based on distance
-        let newLevel = switch distance {
-            case 0...1: 5    // Less than 1 mile
-            case 1...2: 4    // 1-2 miles
-            case 2...3: 3    // 2-3 miles
-            case 3...4: 2    // 3-4 miles
-            default: 1       // More than 4 miles
+        let newLevel: Int
+        if distance <= 1 {
+            newLevel = 5        // Less than 1 mile
+        } else if distance <= 2 {
+            newLevel = 4        // 1-2 miles
+        } else if distance <= 3 {
+            newLevel = 3        // 2-3 miles
+        } else if distance <= 4 {
+            newLevel = 2        // 3-4 miles
+        } else {
+            newLevel = 1        // More than 4 miles
         }
         
         // Only update if level changed
