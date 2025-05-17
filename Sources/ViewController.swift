@@ -290,23 +290,23 @@ extension ViewController: CLLocationManagerDelegate {
             newLevel = 1        // More than 4 miles
         }
         
-        // Only update if level changed
-        if currentLevel != newLevel {
-            currentLevel = newLevel
-            levelLabel.text = "Level: \(currentLevel)"
-            
-            // Add level up animation
-            UIView.animate(withDuration: 0.3, animations: {
-                self.levelLabel.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
-            }) { _ in
-                UIView.animate(withDuration: 0.2) {
-                    self.levelLabel.transform = .identity
-                }
+        print("Distance: \(distance) miles, Level: \(newLevel)")
+        
+        // Update level and create tacos
+        currentLevel = newLevel
+        levelLabel.text = "Level: \(currentLevel)"
+        
+        // Add level up animation
+        UIView.animate(withDuration: 0.3, animations: {
+            self.levelLabel.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+        }) { _ in
+            UIView.animate(withDuration: 0.2) {
+                self.levelLabel.transform = .identity
             }
-            
-            // Create tacos for new level
-            createTacos(for: currentLevel)
         }
+        
+        // Always create new tacos when level is updated
+        createTacos(for: currentLevel)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
