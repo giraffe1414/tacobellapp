@@ -18,10 +18,10 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need your location to find the nearest Taco Bell</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to find the nearest Taco Bell</string>
+	<string>We need your location to find the nearest Taco Bell and determine your taco-catching level!</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to find the nearest Taco Bell and determine your taco-catching level!</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
