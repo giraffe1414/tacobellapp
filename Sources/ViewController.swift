@@ -165,15 +165,13 @@ class ViewController: UIViewController {
                 let randomX = CGFloat.random(in: 50...(self.view.bounds.width - 50))
                 let tacoView = UIImageView(frame: CGRect(x: randomX, y: -50, width: 40, height: 40))
                 
-                if #available(iOS 13.0, *) {
-                    let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .medium)
-                    tacoView.image = UIImage(systemName: "takeoutbag.and.cup.and.straw.fill")?
-                        .withConfiguration(config)
-                        .withTintColor(.systemOrange, renderingMode: .alwaysOriginal)
-                } else {
-                    tacoView.backgroundColor = .systemOrange
-                    tacoView.layer.cornerRadius = 20
-                }
+                // Use emoji label instead of image
+                let emojiLabel = UILabel(frame: tacoView.bounds)
+                emojiLabel.text = "🌮"
+                emojiLabel.font = .systemFont(ofSize: 30)
+                emojiLabel.textAlignment = .center
+                tacoView.addSubview(emojiLabel)
+                tacoView.backgroundColor = .clear
                 
                 tacoView.contentMode = .scaleAspectFit
                 tacoView.isUserInteractionEnabled = true
