@@ -158,12 +158,14 @@ class ViewController: UIViewController {
         let tacoCount = calculateTacoCount(for: level)
         print("Will create \(tacoCount) tacos")
         
-        // Create and animate tacos with delay
+        print("Current level: \(level), Taco count: \(tacoCount)")
+        
+        // Create all tacos at once with different starting heights
         for i in 0..<tacoCount {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.15) {
-                print("Creating taco \(i + 1) of \(tacoCount)")
-                let randomX = CGFloat.random(in: 50...(self.view.bounds.width - 50))
-                let tacoView = UIImageView(frame: CGRect(x: randomX, y: -50, width: 40, height: 40))
+            print("Creating taco \(i + 1) of \(tacoCount)")
+            let randomX = CGFloat.random(in: 50...(view.bounds.width - 50))
+            let startY = CGFloat(-50 - (i * 30)) // Stack them vertically
+            let tacoView = UIImageView(frame: CGRect(x: randomX, y: startY, width: 40, height: 40))
                 
                 // Use emoji label instead of image
                 let emojiLabel = UILabel(frame: tacoView.bounds)
