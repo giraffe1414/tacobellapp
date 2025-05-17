@@ -237,7 +237,12 @@ extension ViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.first else { return }
+        guard let location = locations.last else { return }
+        
+        // Prevent multiple rapid location updates
+        locationManager?.stopUpdatingLocation()
+        
+        print("Location update received")
         
         // Search for nearby Taco Bell locations
         let searchRequest = MKLocalSearch.Request()
@@ -248,32 +253,27 @@ extension ViewController: CLLocationManagerDelegate {
         search.start { [weak self] response, error in
             guard let self = self else { return }
             
-            if let error = error {
-                print("Search error: \(error.localizedDescription)")
-                self.distanceLabel.text = "Error finding Taco Bell locations"
-                return
-            }
-            
-            guard let nearestTacoBell = response?.mapItems.first else {
-                self.distanceLabel.text = "No Taco Bell locations found nearby"
-                return
-            }
-            
-            let distance = location.distance(from: nearestTacoBell.placemark.location!)
-            let distanceInMiles = distance / 1609.34 // Convert meters to miles
-            
-            // Update UI on main thread
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                
-                self.distanceLabel.text = String(format: "Nearest Taco Bell: %.1f miles", distanceInMiles)
-                
-                // Only update level and create tacos if we don't have any
-                if self.tacoViews.isEmpty {
-                    print("Creating tacos - current count: \(self.tacoViews.count)")
-                    self.updateLevel(distance: distanceInMiles)
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("Search error: \(error.localizedDescription)")
+                    self.distanceLabel.text = "Error finding Taco Bell locations"
+                    self.refreshControl?.endRefreshing()
+                    return
                 }
                 
+                guard let nearestTacoBell = response?.mapItems.first else {
+                    print("No Taco Bell locations found")
+                    self.distanceLabel.text = "No Taco Bell locations found nearby"
+                    self.refreshControl?.endRefreshing()
+                    return
+                }
+                
+                let distance = location.distance(from: nearestTacoBell.placemark.location!)
+                let distanceInMiles = distance / 1609.34 // Convert meters to miles
+                
+                print("Found Taco Bell at \(distanceInMiles) miles")
+                self.distanceLabel.text = String(format: "Nearest Taco Bell: %.1f miles", distanceInMiles)
+                self.updateLevel(distance: distanceInMiles)
                 self.refreshControl?.endRefreshing()
             }
         }
