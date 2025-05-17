@@ -28,5 +28,3 @@ targets:
         UIMainStoryboardFile: Main
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
-        NSLocationWhenInUseUsageDescription: "We need your location to find the nearest Taco Bell"
-        NSLocationAlwaysAndWhenInUseUsageDescription: "We need your location to find the nearest Taco Bell"
