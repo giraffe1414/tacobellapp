@@ -266,6 +266,10 @@ extension ViewController: CLLocationManagerDelegate {
             DispatchQueue.main.async {
                 self.distanceLabel.text = String(format: "Nearest Taco Bell: %.1f miles", distanceInMiles)
                 self.updateLevel(distance: distanceInMiles)
+                // Force create new tacos even if level didn't change
+                if self.tacoViews.isEmpty {
+                    self.createTacos(for: self.currentLevel)
+                }
                 self.refreshControl?.endRefreshing()
             }
         }
