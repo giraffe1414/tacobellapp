@@ -63,7 +63,15 @@ class ViewController: UIViewController {
     }
     
     private func setupPhysics() {
-        // No physics setup needed for UIView animations
+        animator = UIDynamicAnimator(referenceView: view)
+        
+        gravity = UIGravityBehavior()
+        gravity.magnitude = 1.0
+        animator.addBehavior(gravity)
+        
+        collision = UICollisionBehavior()
+        collision.translatesReferenceBoundsIntoBoundary = true
+        animator.addBehavior(collision)
     }
     
     private func setupDistanceLabel() {
@@ -171,28 +179,28 @@ class ViewController: UIViewController {
             view.addSubview(tacoView)
             tacoViews.append(tacoView)
             
-            // Start rotation animation
-            UIView.animate(withDuration: 3.0, delay: 0, options: [.curveLinear, .repeat, .allowUserInteraction], animations: {
-                tacoView.transform = CGAffineTransform(rotationAngle: .pi * 2)
-            })
+            // Add physics behaviors
+            gravity.addItem(tacoView)
+            collision.addItem(tacoView)
             
-            // Animate falling with spring physics
-            let delay = Double(i) * 0.15 // Slightly faster stagger
-            UIView.animate(withDuration: 1.5,
-                         delay: delay,
-                         usingSpringWithDamping: 0.7,
-                         initialSpringVelocity: 0.0,
-                         options: [.allowUserInteraction],
-                         animations: {
-                tacoView.center.y = self.view.bounds.height - 30
-            }) { _ in
-                // Add subtle floating effect
-                UIView.animate(withDuration: 1.2,
-                             delay: 0,
-                             options: [.repeat, .autoreverse, .allowUserInteraction, .curveEaseInOut],
-                             animations: {
-                    tacoView.center.y -= 10
-                })
+            // Add rotation behavior
+            let rotation = UIDynamicItemBehavior(items: [tacoView])
+            rotation.angularVelocity = CGFloat.random(in: -3...3)
+            rotation.elasticity = 0.5
+            rotation.resistance = 1.0
+            animator.addBehavior(rotation)
+            
+            // Add item behavior for better physics
+            let itemBehavior = UIDynamicItemBehavior(items: [tacoView])
+            itemBehavior.elasticity = 0.6
+            itemBehavior.friction = 0.2
+            itemBehavior.resistance = 0.1
+            itemBehavior.density = 0.5
+            animator.addBehavior(itemBehavior)
+            
+            // Delay the start of next taco
+            if i < tacoCount - 1 {
+                Thread.sleep(forTimeInterval: 0.1)
             }
         }
     }
