@@ -166,7 +166,16 @@ class ViewController: UIViewController {
         for _ in 0..<tacoCount {
             let randomX = CGFloat.random(in: 50...(view.bounds.width - 50))
             let tacoView = UIImageView(frame: CGRect(x: randomX, y: -50, width: 40, height: 40))
-            tacoView.image = UIImage(named: "taco")
+            if #available(iOS 13.0, *) {
+                let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .medium)
+                tacoView.image = UIImage(systemName: "takeoutbag.and.cup.and.straw.fill")?
+                    .withConfiguration(config)
+                    .withTintColor(.systemOrange, renderingMode: .alwaysOriginal)
+            } else {
+                // Fallback for older iOS versions
+                tacoView.backgroundColor = .systemOrange
+                tacoView.layer.cornerRadius = 20
+            }
             tacoView.contentMode = .scaleAspectFit
             tacoView.isUserInteractionEnabled = true
             
