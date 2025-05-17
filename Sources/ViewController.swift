@@ -168,12 +168,21 @@ class ViewController: UIViewController {
             let tacoView = UIImageView(frame: CGRect(x: randomX, y: startY, width: 40, height: 40))
             
             // Use emoji label instead of image
-            let emojiLabel = UILabel(frame: tacoView.bounds)
+            tacoView.backgroundColor = .clear
+            
+            let emojiLabel = UILabel()
+            emojiLabel.translatesAutoresizingMaskIntoConstraints = false
             emojiLabel.text = "🌮"
-            emojiLabel.font = .systemFont(ofSize: 30)
+            emojiLabel.font = .systemFont(ofSize: 40)
             emojiLabel.textAlignment = .center
             tacoView.addSubview(emojiLabel)
-            tacoView.backgroundColor = .clear
+            
+            NSLayoutConstraint.activate([
+                emojiLabel.centerXAnchor.constraint(equalTo: tacoView.centerXAnchor),
+                emojiLabel.centerYAnchor.constraint(equalTo: tacoView.centerYAnchor),
+                emojiLabel.widthAnchor.constraint(equalTo: tacoView.widthAnchor),
+                emojiLabel.heightAnchor.constraint(equalTo: tacoView.heightAnchor)
+            ])
             
             tacoView.contentMode = .scaleAspectFit
             tacoView.isUserInteractionEnabled = true
