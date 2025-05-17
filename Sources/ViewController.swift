@@ -188,7 +188,7 @@ class ViewController: UIViewController {
             
             // Add rotation
             let rotation = UIDynamicItemBehavior(items: [tacoView])
-            rotation.angularVelocity = CGFloat.random(in: -2...2)
+            rotation.addAngularVelocity(CGFloat.random(in: -2...2), for: tacoView)
             rotation.elasticity = 0.5
             animator.addBehavior(rotation)
         }
