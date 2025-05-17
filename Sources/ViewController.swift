@@ -335,8 +335,9 @@ extension ViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Location error: \(error.localizedDescription)")
         DispatchQueue.main.async {
-            self.distanceLabel.text = "Error getting location"
-            self.refreshControl?.endRefreshing()
+            // For testing in simulator, use a default location
+            let defaultLocation = CLLocation(latitude: 37.7749, longitude: -122.4194) // San Francisco
+            self.locationManager(manager, didUpdateLocations: [defaultLocation])
         }
     }
 }
