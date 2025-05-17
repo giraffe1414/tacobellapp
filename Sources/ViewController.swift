@@ -263,13 +263,17 @@ extension ViewController: CLLocationManagerDelegate {
             let distanceInMiles = distance / 1609.34 // Convert meters to miles
             
             // Update UI on main thread
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                
                 self.distanceLabel.text = String(format: "Nearest Taco Bell: %.1f miles", distanceInMiles)
-                self.updateLevel(distance: distanceInMiles)
-                // Force create new tacos even if level didn't change
+                
+                // Only update level and create tacos if we don't have any
                 if self.tacoViews.isEmpty {
-                    self.createTacos(for: self.currentLevel)
+                    print("Creating tacos - current count: \(self.tacoViews.count)")
+                    self.updateLevel(distance: distanceInMiles)
                 }
+                
                 self.refreshControl?.endRefreshing()
             }
         }
