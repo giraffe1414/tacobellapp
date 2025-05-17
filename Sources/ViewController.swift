@@ -160,38 +160,41 @@ class ViewController: UIViewController {
         
         // Create and animate tacos
         DispatchQueue.main.async {
+            // Create tacos with a slight delay between each one
             for i in 0..<tacoCount {
-                print("Creating taco \(i + 1) of \(tacoCount)")
-                let randomX = CGFloat.random(in: 50...(self.view.bounds.width - 50))
-                let tacoView = UIImageView(frame: CGRect(x: randomX, y: -50, width: 40, height: 40))
-                if #available(iOS 13.0, *) {
-                    let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .medium)
-                    tacoView.image = UIImage(systemName: "takeoutbag.and.cup.and.straw.fill")?
-                        .withConfiguration(config)
-                        .withTintColor(.systemOrange, renderingMode: .alwaysOriginal)
-                } else {
-                    // Fallback for older iOS versions
-                    tacoView.backgroundColor = .systemOrange
-                    tacoView.layer.cornerRadius = 20
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.1) {
+                    print("Creating taco \(i + 1) of \(tacoCount)")
+                    let randomX = CGFloat.random(in: 50...(self.view.bounds.width - 50))
+                    let tacoView = UIImageView(frame: CGRect(x: randomX, y: -50, width: 40, height: 40))
+                    if #available(iOS 13.0, *) {
+                        let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .medium)
+                        tacoView.image = UIImage(systemName: "takeoutbag.and.cup.and.straw.fill")?
+                            .withConfiguration(config)
+                            .withTintColor(.systemOrange, renderingMode: .alwaysOriginal)
+                    } else {
+                        // Fallback for older iOS versions
+                        tacoView.backgroundColor = .systemOrange
+                        tacoView.layer.cornerRadius = 20
+                    }
+                    tacoView.contentMode = .scaleAspectFit
+                    tacoView.isUserInteractionEnabled = true
+                    
+                    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tacoTapped(_:)))
+                    tacoView.addGestureRecognizer(tapGesture)
+                    
+                    self.view.addSubview(tacoView)
+                    self.tacoViews.append(tacoView)
+                    
+                    // Add physics
+                    self.gravity.addItem(tacoView)
+                    self.collision.addItem(tacoView)
+                    
+                    // Add rotation
+                    let rotation = UIDynamicItemBehavior(items: [tacoView])
+                    rotation.addAngularVelocity(CGFloat.random(in: -2...2), for: tacoView)
+                    rotation.elasticity = 0.5
+                    self.animator.addBehavior(rotation)
                 }
-                tacoView.contentMode = .scaleAspectFit
-                tacoView.isUserInteractionEnabled = true
-                
-                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tacoTapped(_:)))
-                tacoView.addGestureRecognizer(tapGesture)
-                
-                self.view.addSubview(tacoView)
-                self.tacoViews.append(tacoView)
-                
-                // Add physics
-                self.gravity.addItem(tacoView)
-                self.collision.addItem(tacoView)
-                
-                // Add rotation
-                let rotation = UIDynamicItemBehavior(items: [tacoView])
-                rotation.addAngularVelocity(CGFloat.random(in: -2...2), for: tacoView)
-                rotation.elasticity = 0.5
-                self.animator.addBehavior(rotation)
             }
         }
     }
